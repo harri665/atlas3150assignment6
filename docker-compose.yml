@@ -1,37 +1,11 @@
+# The site as a Portainer stack on TrueNAS, served at
+# atlas3150A6.harrison-martin.com (the proxy points there at port 41537)
 services:
-  server:
-    build:
-      context: ./Src/server
-      dockerfile: Dockerfile
-    container_name: harwood-server
-    ports:
-      - "3001:3001"
-    environment:
-      - NODE_ENV=production
-      - PORT=3001
-    networks:
-      - harwood-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
   client:
     build:
-      context: ./Src/client
-      dockerfile: Dockerfile
-    container_name: harwood-client
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: atlas3150a6-client
     ports:
-      - "80:80"
-    depends_on:
-      - server
-    networks:
-      - harwood-network
+      - "41537:80"
     restart: unless-stopped
-
-networks:
-  harwood-network:
-    driver: bridge

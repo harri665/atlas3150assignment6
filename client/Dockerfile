@@ -1,29 +1,12 @@
-# Build stage
-FROM node:18-alpine AS builder
-
+# Builds the site and serves it with nginx. Built from the repo root
+# (docker-compose.yml), since client/package.json depends on the root package.
+FROM node:22-alpine AS build
 WORKDIR /app
+COPY package.json package-lock.json ./
+COPY client/package.json client/package-lock.json client/
+RUN cd client && npm ci
+COPY client client
+RUN cd client && npm run build
 
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm ci
-
-# Copy source code
-COPY . .
-
-# Build the app
-RUN npm run build
-
-# Production stage
 FROM nginx:alpine
-
-# Copy built assets from builder
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Copy nginx config for React Router (SPA)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=build /app/client/dist /usr/share/nginx/html
