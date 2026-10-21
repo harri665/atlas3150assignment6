@@ -130,3 +130,6 @@ yarn/install-state.gz
 pnp.*
 # assignment handout
 *.docx
+
+# Claude Code local settings
+.claude/

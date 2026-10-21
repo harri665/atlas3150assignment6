@@ -1,0 +1,227 @@
+/* bare rgb triples so they work in rgb(... / alpha) */
+.lens-cs { --lens: 216 224 233; --lens-2: 125 138 153; } /* steel */
+.lens-art { --lens: 255 124 118; --lens-2: 255 178 92; }
+
+.prism-card {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.5rem;
+  background: rgba(15, 17, 23, 0.52);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  overflow: hidden;
+}
+
+@media (max-width: 639px) {
+  .prism-card {
+    background: rgba(15, 17, 23, 0.82);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* refraction happens in webgl (LiquidGlassPass), this is just the rim, sheen and glow */
+.liquid-glass {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.015) 55%,
+    rgba(255, 255, 255, 0.03)
+  );
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.1),
+    inset 0 0 22px rgba(255, 255, 255, 0.05),
+    0 14px 44px rgba(0, 0, 0, 0.35);
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.35);
+}
+
+/* faint tint so the nav stays readable over text */
+.liquid-glass.glass-bar {
+  background-color: rgb(8 9 12 / 0.22);
+}
+
+.liquid-glass.glass-bar.glass-bar-frost {
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(140%);
+}
+
+/* filled not blurred: backdrop blur over a page-length panel + live canvas repaints
+every scroll frame. with data-glass-pass the webgl pass draws it instead */
+.liquid-glass.glass-panel {
+  background-color: rgb(var(--surface) / 0.85);
+  text-shadow: none;
+}
+[data-glass-pass] .liquid-glass.glass-panel[data-glass-merge] {
+  background: none;
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.3);
+}
+[data-glass-pass] .glass-panel[data-glass-merge] > .liquid-glass-rim {
+  display: none;
+}
+
+.liquid-glass-rim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  padding: 1.25px;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.18) 18%,
+    rgba(255, 255, 255, 0) 38%,
+    rgba(255, 255, 255, 0) 64%,
+    rgba(255, 255, 255, 0.16) 84%,
+    rgba(255, 255, 255, 0.55) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+.liquid-glass-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 70% at 15% -10%, rgba(255, 255, 255, 0.14), transparent 55%),
+    linear-gradient(
+      115deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.045) 42%,
+      transparent 54%
+    );
+}
+
+.liquid-glass-sheen.liquid-glass-over,
+.liquid-glass-rim.liquid-glass-over {
+  z-index: 4;
+}
+
+/* css animation not framer-motion so it runs on the compositor while the main thread is busy.
+starts at barely visible because chrome doesn't count opacity 0 as painted (LCP) */
+@keyframes hero-rise {
+  from {
+    opacity: 0.01;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hero-rise {
+  animation: hero-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise {
+    animation: none;
+  }
+}
+
+.prism-text[data-glass-ready] {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.prism-glow::before,
+.prism-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.prism-glow::before {
+  z-index: 0;
+  background: radial-gradient(
+    420px circle at var(--mx, 50%) var(--my, 0%),
+    rgb(var(--lens, 255 255 255) / 0.14),
+    transparent 62%
+  );
+}
+
+.prism-glow::after {
+  z-index: 5;
+  padding: 1px;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 0%),
+    rgb(var(--lens, 255 255 255) / 0.9),
+    rgb(var(--lens-2, 255 255 255) / 0.35) 40%,
+    transparent 72%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+.prism-glow:hover::before,
+.prism-glow:hover::after,
+.prism-glow:focus-visible::before,
+.prism-glow:focus-visible::after {
+  opacity: 1;
+}
+
+.prism-glow:focus-visible {
+  outline: 2px solid rgb(var(--lens, 255 255 255) / 0.9);
+  outline-offset: 3px;
+}
+
+@media (hover: none) {
+  .prism-glow::before,
+  .prism-glow::after { display: none; }
+}
+
+.solid-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.solid-glow::after {
+  z-index: 5;
+  padding: 1px;
+  background: rgb(255 255 255 / 0.22);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+.solid-glow:hover::after,
+.solid-glow:focus-visible::after,
+.solid-glow[data-focus]::after {
+  opacity: 1;
+}
+
+.solid-glow:focus-visible {
+  outline: 2px solid rgb(var(--lens, 255 255 255) / 0.9);
+  outline-offset: 3px;
+}
+
+@media (hover: none) {
+  .prism-glow[data-focus]::after {
+    display: block;
+    opacity: 1;
+    background: radial-gradient(
+      120% 90% at 50% 0%,
+      rgb(var(--lens, 255 255 255) / 0.85),
+      rgb(var(--lens-2, 255 255 255) / 0.3) 45%,
+      transparent 75%
+    );
+  }
+}

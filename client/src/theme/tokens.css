@@ -1,0 +1,70 @@
+/* colours are bare channels so tailwind opacity modifiers work: rgb(var(--ink) / 0.5) */
+
+:root {
+  /* type */
+  --font-sans: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Consolas, monospace;
+
+  /* surfaces, darkest to lightest */
+  --bg: 8 9 12;
+  --surface: 17 19 24;
+  --surface-2: 24 27 33;
+  --line: 255 255 255;            /* used at 9% / 16% */
+
+  /* text: primary, secondary, tertiary. all pass WCAG AA on --bg */
+  --ink: 242 243 245;
+  --ink-2: 180 184 192;
+  --ink-3: 132 137 147;
+
+  /* same lightness + chroma, only the hue changes */
+  --accent-l: 74%;
+  --accent-c: 0.13;
+  --accent: 96% 0 0;
+  --on-accent: 11 12 16;
+
+  --radius-sm: 6px;   /* tags, chips, code */
+  --radius-md: 12px;  /* inputs, images inside panels */
+  --radius-lg: 22px;  /* cards and panels */
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-section="cs"]   { --accent: var(--accent-l) var(--accent-c) 235; }  /* cool */
+[data-section="art"]  { --accent: var(--accent-l) var(--accent-c) 45; }   /* ember */
+[data-section="blog"] { --accent: var(--accent-l) var(--accent-c) 95; }   /* Houdini selection yellow */
+
+html {
+  background: rgb(var(--bg));
+}
+
+body {
+  margin: 0;
+  background: rgb(var(--bg));
+  color: rgb(var(--ink));
+  font-family: var(--font-sans);
+  font-feature-settings: 'tnum' 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code,
+kbd,
+pre {
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background: oklch(var(--accent) / 0.35);
+}
+
+:focus-visible {
+  outline: 2px solid oklch(var(--accent) / 0.9);
+  outline-offset: 3px;
+}
+
+.network-grid {
+  background-color: rgb(var(--surface));
+  background-image: radial-gradient(rgb(var(--line) / 0.06) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-attachment: fixed;
+}

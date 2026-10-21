@@ -1,3 +1,5 @@
-/* Tailwind without its preflight reset, so the page keeps the browser's default styles */
-@import "tailwindcss/theme";
-@import "tailwindcss/utilities";
+/* with Tailwind's preflight, like the portfolio the homepage is copied from */
+@import "tailwindcss";
+
+/* the portfolio's theme (colours, radii, fonts) */
+@config "../tailwind.config.js";
