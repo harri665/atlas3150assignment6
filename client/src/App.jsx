@@ -10,6 +10,7 @@ function App() {
         <ul style={{ display: 'flex', gap: '1rem' }}>
           <li><Link to="/">Home</Link></li>
           <li><Link to="/about">About</Link></li>
+          <li><a href="htmlbasics/htmlbasics.html">Assignment 7</a></li>
         </ul>
       </nav>
 

@@ -1,0 +1,22 @@
+h1, h2 {
+  color: green;
+}
+p {
+  color: gray;
+}
+ul {
+  border: 3px dashed orange;
+}
+ol {
+  border: 3px solid teal;
+}
+ol, ul {
+  padding: 10px 30px;
+  border-radius: 8px;
+}
+h1, strong {
+  color: purple;
+}
+em {
+  color: crimson;
+}
